@@ -7,6 +7,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
+
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
+
 @dataclass ## Decorator.
 class DataIngestionConfig:
     artifact_dir : str = 'artifact'
@@ -84,3 +88,7 @@ if __name__=='__main__':
     train_path, test_path =obj.initiate_data_ingestion()
     print(f"Train data available at: {train_path}")
     print(f"Test data available at: {test_path}")
+
+    datatransformation = DataTransformation()
+    datatransformation.initiate_data_transformation(train_path,test_path)
+    
