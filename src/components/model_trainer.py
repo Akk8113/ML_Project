@@ -18,88 +18,100 @@ from src.logger import logging
 
 from src.utils import save_object,evaluate_models
 
+
 @dataclass
 class ModelTrainerConfig:
-    trained_model_file_path=os.path.join("artifact","model.pkl")
+    trained_model_file_path = os.path.join("artifact", "model.pkl")
+
 
 class ModelTrainer:
     def __init__(self):
-        self.model_trainer_config=ModelTrainerConfig()
+        self.model_trainer_config = ModelTrainerConfig()
 
-
-    def initiate_model_trainer(self,train_array,test_array):
+    def initiate_model_trainer(self, train_array, test_array):
         try:
             start_time = time.time()
             logging.info("Split training and test input data")
-            X_train,y_train,X_test,y_test=(
-                train_array[:,:-1],
-                train_array[:,-1],
-                test_array[:,:-1],
-                test_array[:,-1]
+
+            X_train, y_train, X_test, y_test = (
+                train_array[:, :-1],
+                train_array[:, -1],
+                test_array[:, :-1],
+                test_array[:, -1]
             )
+
             models = {
                 "Random Forest": RandomForestRegressor(),
                 "Decision Tree": DecisionTreeRegressor(),
                 "Gradient Boosting": GradientBoostingRegressor(),
                 "Linear Regression": LinearRegression(),
                 "XGBRegressor": XGBRegressor(),
-                "AdaBoost Regressor": AdaBoostRegressor(),
-            }
-            params={
-                "Decision Tree": {
-                    'criterion':['squared_error', 'friedman_mse', 'absolute_error'],
-                },
-                "Random Forest":{
-                    'n_estimators': [8,16,32,64,128,256]
-                },
-                "Gradient Boosting":{
-                    'learning_rate':[.1,.01,.05,.001],
-                    'subsample':[0.6,0.7,0.75,0.8,0.85,0.9],
-                    'n_estimators': [8,16,32,64,128,256]
-                },
-                "Linear Regression":{},
-                "XGBRegressor":{
-                    'learning_rate':[.1,.01,.05,.001],
-                    'n_estimators': [8,16,32,64,128,256]
-                },
-                "AdaBoost Regressor":{
-                    'learning_rate':[.1,.01,0.5,.001],
-                    'n_estimators': [8,16,32,64,128,256]
-                }
-                
+                "AdaBoost Regressor": AdaBoostRegressor()
             }
 
-            model_report:dict=evaluate_models(X_train=X_train,y_train=y_train,X_test=X_test,y_test=y_test,
-                                             models=models,param=params)
+            params = {
+                "Decision Tree": {
+                    'criterion': ['squared_error', 'friedman_mse', 'absolute_error'],
+                },
+                "Random Forest": {
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                },
+                "Gradient Boosting": {
+                    'learning_rate': [0.1, 0.01, 0.05, 0.001],
+                    'subsample': [0.6, 0.7, 0.75, 0.8, 0.85, 0.9],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                },
+                "Linear Regression": {},
+                "XGBRegressor": {
+                    'learning_rate': [0.1, 0.01, 0.05, 0.001],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                },
+                "AdaBoost Regressor": {
+                    'learning_rate': [0.1, 0.01, 0.5, 0.001],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                }
+            }
+
+            # ✅ Get both the R2 scores and the trained model objects
+            model_report, trained_models = evaluate_models(
+                X_train=X_train,
+                y_train=y_train,
+                X_test=X_test,
+                y_test=y_test,
+                models=models,
+                param=params
+            )
+
             print(f"Model report: {model_report}")
 
             if not model_report:
-                raise CustomException("No models were successfully trained and evaluated.")
+                raise CustomException("No models were successfully trained and evaluated.", sys)
 
             try:
-                ## To get best model score from dict
+                # ✅ Identify the best model based on the highest R2 score
                 best_model_score = max(sorted(model_report.values()))
+                best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
+                
+                # ✅ Get the best trained (fitted) model
+                best_model = trained_models[best_model_name]
 
-                ## To get best model name from dict
+                if best_model_score < 0.6:
+                    raise CustomException("No best model found", sys)
 
-                best_model_name = list(model_report.keys())[
-                    list(model_report.values()).index(best_model_score)
-                ]
-                best_model = models[best_model_name]
+                logging.info(f"Best found model on both training and testing dataset: {best_model_name}")
 
-                if best_model_score<0.6:
-                    raise CustomException("No best model found")
-                logging.info(f"Best found model on both training and testing dataset")
-
+                # ✅ Save the trained model
                 save_object(
                     file_path=self.model_trainer_config.trained_model_file_path,
                     obj=best_model
                 )
+
                 print(f"Model saved to: {self.model_trainer_config.trained_model_file_path}")
 
-                predicted=best_model.predict(X_test)
-
+                # ✅ Predict using the trained model
+                predicted = best_model.predict(X_test)
                 r2_square = r2_score(y_test, predicted)
+
                 end_time = time.time()
                 print(f"R2 score: {r2_square}")
                 print(f"Total training time: {end_time - start_time} seconds")
@@ -107,9 +119,10 @@ class ModelTrainer:
 
             except Exception as e:
                 raise CustomException(f"Error selecting or saving best model: {e}", sys)
-            
+
         except Exception as e:
-            raise CustomException(e,sys)
+            raise CustomException(e, sys)
+
 
 if __name__ == "__main__":
     try:

@@ -1,8 +1,11 @@
+import logging
 import os
 import sys
 import pickle
 from sklearn.model_selection import GridSearchCV
 from src.exception import CustomException
+from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 
 def save_object(file_path: str, obj: object) -> None:
     """
@@ -27,9 +30,9 @@ def save_object(file_path: str, obj: object) -> None:
     except Exception as e:
         raise CustomException(e, sys)
 
-def evaluate_models(X_train, y_train, X_test, y_test, models: dict, param: dict) -> dict:
+def evaluate_models(X_train, y_train, X_test, y_test, models: dict, param) -> tuple:
     """
-    Train and evaluate multiple models with default parameters (no hyperparameter tuning).
+    Train and evaluate multiple models using GridSearchCV for hyperparameter tuning.
 
     Args:
         X_train: Training features.
@@ -37,27 +40,38 @@ def evaluate_models(X_train, y_train, X_test, y_test, models: dict, param: dict)
         X_test: Testing features.
         y_test: Testing target.
         models (dict): Dictionary of model name to model instance.
-        param (dict): Ignored in this simplified version.
+        param (dict): Dictionary of model name to hyperparameter grid.
 
     Returns:
-        dict: Model name to R2 score on test data.
+        Tuple: (Model name to R2 score dict, Model name to best trained model dict)
     """
-    from sklearn.metrics import r2_score
+
     model_report = {}
+    best_models = {}
 
     for model_name, model in models.items():
         try:
-            model.fit(X_train, y_train)
+            para = param.get(model_name, {})
+            gs = GridSearchCV(model, para, cv=3, n_jobs=-1, verbose=0)
+            gs.fit(X_train, y_train)
 
-            y_train_pred = model.predict(X_train)
-            y_test_pred = model.predict(X_test)
+            best_model = gs.best_estimator_
+            y_train_pred = best_model.predict(X_train)
+            y_test_pred = best_model.predict(X_test)
 
-            train_score = r2_score(y_train, y_train_pred)
             test_score = r2_score(y_test, y_test_pred)
-
             model_report[model_name] = test_score
+            best_models[model_name] = best_model  # ✅ Save the trained model
 
         except Exception as e:
             logging.error(f"Model {model_name} failed during training or evaluation: {e}")
 
-    return model_report
+    return model_report, best_models
+
+
+
+
+
+
+
+
