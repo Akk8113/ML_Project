@@ -9,6 +9,8 @@ from sklearn.compose import ColumnTransformer
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
+from sklearn.compose import ColumnTransformer
+
 
 @dataclass
 class DataTransformationConfig:
@@ -61,8 +63,9 @@ class DataTransformation:
             test_df = pd.read_csv(test_path)
 
             # Identify numerical and categorical features
-            numerical_features = train_df.select_dtypes(include=['int64', 'float64']).columns.tolist()
-            categorical_features = train_df.select_dtypes(include=['object', 'category']).columns.tolist()
+            target_column = 'Good/Bad'  # Updated to actual target column name from dataset
+            numerical_features = train_df.drop(columns=[target_column]).select_dtypes(include=['int64', 'float64']).columns.tolist()
+            categorical_features = train_df.drop(columns=[target_column]).select_dtypes(include=['object', 'category']).columns.tolist()
 
             logging.info(f"Numerical features: {numerical_features}")
             logging.info(f"Categorical features: {categorical_features}")
@@ -70,11 +73,23 @@ class DataTransformation:
             # Get transformer object
             preprocessor = self.get_data_transformer_object(numerical_features, categorical_features)
 
+            # Separate features and target
+            X_train = train_df.drop(columns=[target_column])
+            y_train = train_df[target_column]
+
+            X_test = test_df.drop(columns=[target_column])
+            y_test = test_df[target_column]
+
             # Fit and transform train data
-            train_array = preprocessor.fit_transform(train_df)
+            X_train_transformed = preprocessor.fit_transform(X_train)
 
             # Transform test data
-            test_array = preprocessor.transform(test_df)
+            X_test_transformed = preprocessor.transform(X_test)
+
+            # Concatenate transformed features with target to form final arrays
+            import numpy as np
+            train_array = np.c_[X_train_transformed, y_train.to_numpy()]
+            test_array = np.c_[X_test_transformed, y_test.to_numpy()]
 
             # Save the preprocessor object using utils.save_object
             save_object(self.data_transformation_config.preprocessor_obj_file_path, preprocessor)
