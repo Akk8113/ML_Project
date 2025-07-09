@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+import sklearn
 from sklearn.compose import ColumnTransformer
 from src.exception import CustomException
 from src.logger import logging
@@ -31,10 +32,16 @@ class DataTransformation:
                 ('scaler', StandardScaler())
             ])
 
+            # Determine OneHotEncoder parameter based on sklearn version
+            if sklearn.__version__ >= '1.2':
+                onehot_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+            else:
+                onehot_encoder = OneHotEncoder(handle_unknown='ignore', sparse=False)
+
             # Categorical pipeline
             cat_pipeline = Pipeline(steps=[
                 ('imputer', SimpleImputer(strategy='most_frequent')),
-                ('onehot', OneHotEncoder(handle_unknown='ignore')),
+                ('onehot', onehot_encoder),
                 ('scaler', StandardScaler(with_mean=False))
             ])
             

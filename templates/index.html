@@ -25,8 +25,17 @@
         <input type="submit" value="Predict from Manual Input">
     </form>
     <br>
-    <form action="/train" method="get">
-        <input type="submit" value="Train Model">
-    </form>
+    {% if predictions %}
+    <h2>Prediction Results</h2>
+    <ul>
+        {% for p in predictions %}
+            <li>{{ p }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if error %}
+    <h3 style="color:red;">Error: {{ error }}</h3>
+    {% endif %}
 </body>
 </html>
