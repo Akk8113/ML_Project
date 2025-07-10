@@ -1,0 +1,158 @@
+/* General body styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298); /* Updated to a nicer blue gradient */
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* Container for the whole page */
+.container {
+    max-width: 720px;
+    margin: 40px auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px 50px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border-radius: 15px;
+    backdrop-filter: blur(8.5px);
+    -webkit-backdrop-filter: blur(8.5px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    animation: fadeIn 1s ease forwards;
+}
+
+/* Headings */
+h1, h2 {
+    color: #f0f0f0;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    user-select: none;
+}
+
+/* Forms */
+form {
+    margin-bottom: 35px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+form:hover {
+    box-shadow: 0 6px 25px rgba(0,0,0,0.35);
+}
+
+/* Labels */
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #e0e0e0;
+    user-select: none;
+}
+
+/* Inputs */
+input[type="number"],
+input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+input[type="number"]:focus,
+input[type="file"]:focus {
+    box-shadow: 0 0 8px 2px #667eea;
+    outline: none;
+    transform: scale(1.02);
+}
+
+/* Submit buttons */
+input[type="submit"] {
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    user-select: none;
+}
+
+input[type="submit"]:hover {
+    background-color: #5a67d8;
+    transform: scale(1.05);
+}
+
+/* Prediction results */
+.prediction-results {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left: 5px solid #667eea;
+    padding: 20px 25px;
+    border-radius: 10px;
+    margin-top: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    color: #f0f0f0;
+    animation: slideIn 0.5s ease forwards;
+}
+
+.prediction-results ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.prediction-results li {
+    padding: 10px 0;
+    font-weight: 700;
+}
+
+/* Error message */
+.error-message {
+    color: #ff6b6b;
+    font-weight: 800;
+    text-align: center;
+    margin-top: 25px;
+    text-shadow: 0 0 5px #ff6b6b;
+    animation: shake 0.5s ease forwards;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        margin: 20px 15px;
+        padding: 20px;
+    }
+}

@@ -2,40 +2,47 @@
 <html>
 <head>
     <title>Wafer Fault Detection</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Upload Wafer Sensor Data</h1>
-    <form action="/predict" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" >
-        <input type="submit" value="Predict from File">
-    </form>
+    <div class="container">
+        <h1>Upload Wafer Sensor Data</h1>
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" >
+            <input type="submit" value="Predict from File">
+        </form>
 
-    <h2>Or Enter Sensor Data Manually</h2>
-    <form action="/predict" method="post">
-        <label for="Sensor-1">Sensor-1:</label>
-        <input type="number" step="any" name="Sensor-1" required placeholder="e.g. 0.12"><br>
-        <label for="Sensor-2">Sensor-2:</label>
-        <input type="number" step="any" name="Sensor-2" required placeholder="e.g. 0.15"><br>
-        <label for="Sensor-3">Sensor-3:</label>
-        <input type="number" step="any" name="Sensor-3" required placeholder="e.g. 0.10"><br>
-        <label for="Sensor-4">Sensor-4:</label>
-        <input type="number" step="any" name="Sensor-4" required placeholder="e.g. 0.20"><br>
-        <label for="Sensor-5">Sensor-5:</label>
-        <input type="number" step="any" name="Sensor-5" required placeholder="e.g. 0.18"><br>
-        <input type="submit" value="Predict from Manual Input">
-    </form>
-    <br>
-    {% if predictions %}
-    <h2>Prediction Results</h2>
-    <ul>
-        {% for p in predictions %}
-            <li>{{ p }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+        <h2>Or Enter Sensor Data Manually</h2>
+        <form action="/predict" method="post">
+            <label for="Sensor-1">Sensor-1:</label>
+            <input type="number" step="any" name="Sensor-1" required placeholder="e.g. 0.12">
+            <label for="Sensor-2">Sensor-2:</label>
+            <input type="number" step="any" name="Sensor-2" required placeholder="e.g. 0.15">
+            <label for="Sensor-3">Sensor-3:</label>
+            <input type="number" step="any" name="Sensor-3" required placeholder="e.g. 0.10">
+            <label for="Sensor-4">Sensor-4:</label>
+            <input type="number" step="any" name="Sensor-4" required placeholder="e.g. 0.20">
+            <label for="Sensor-5">Sensor-5:</label>
+            <input type="number" step="any" name="Sensor-5" required placeholder="e.g. 0.18">
+            <input type="submit" value="Predict from Manual Input">
+        </form>
+        <br>
+        {% if predictions %}
+        <div class="prediction-results">
+            <h2>Prediction Results</h2>
+            <ul>
+                {% for p in predictions %}
+                    <li>{{ p }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
-    {% if error %}
-    <h3 style="color:red;">Error: {{ error }}</h3>
-    {% endif %}
+        {% if error %}
+        <div class="error-message">
+            <h3>Error: {{ error }}</h3>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

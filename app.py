@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -32,9 +32,9 @@ def predict():
             for feature in feature_names:
                 val = request.form.get(feature)
                 if val is None or val == '':
-                    return render_template('index.html', error=f"Missing value for {feature}")
+                    return render_template('home.html', error=f"Missing value for {feature}")
                 if feature not in input_data:
-                    return render_template('index.html', error=f"Unexpected feature: {feature}")
+                    return render_template('home.html', error=f"Unexpected feature: {feature}")
                 input_data[feature] = [float(val)]
 
             df = pd.DataFrame(input_data)
@@ -44,10 +44,10 @@ def predict():
 
         results = ["Good Wafer" if p == 1 else "Bad Wafer" for p in preds]
         if not results:
-            return render_template('index.html', error="No predictions were generated.")
-        return render_template('index.html', predictions=results)
+            return render_template('home.html', error="No predictions were generated.")
+        return render_template('home.html', predictions=results)
     except Exception as e:
-        return render_template('index.html', error=f"Prediction error: {str(e)}")
+        return render_template('home.html', error=f"Prediction error: {str(e)}")
 
 if __name__ == '__main__':
     app.run(debug=True)

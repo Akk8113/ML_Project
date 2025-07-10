@@ -1,15 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Prediction Result</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wafer Fault Detection - Interactive</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}?v={{ config['VERSION'] if config and 'VERSION' in config else '1' }}" />
 </head>
 <body>
-    <h2>Prediction Results</h2>
-    <ul>
-        {% for p in predictions %}
-            <li>{{ p }}</li>
-        {% endfor %}
-    </ul>
-    <a href="/">Back to Home</a>
+    <div class="container">
+        <header>
+            <h1>Wafer Fault Detection</h1>
+            <p class="subtitle">Upload sensor data or enter manually to predict wafer quality</p>
+        </header>
+
+        <section class="upload-section">
+            <h2>Upload Wafer Sensor Data</h2>
+            <form action="/predict" method="post" enctype="multipart/form-data" id="uploadForm">
+                <input type="file" name="file" id="fileInput" />
+                <input type="submit" value="Predict from File" />
+            </form>
+        </section>
+
+        <section class="manual-input-section">
+            <h2>Or Enter Sensor Data Manually</h2>
+            <form action="/predict" method="post" id="manualForm">
+                <div class="input-group">
+                    <label for="Sensor-1">Sensor-1:</label>
+                    <input type="number" step="any" name="Sensor-1" id="Sensor-1" required placeholder="e.g. 0.12" />
+                </div>
+                <div class="input-group">
+                    <label for="Sensor-2">Sensor-2:</label>
+                    <input type="number" step="any" name="Sensor-2" id="Sensor-2" required placeholder="e.g. 0.15" />
+                </div>
+                <div class="input-group">
+                    <label for="Sensor-3">Sensor-3:</label>
+                    <input type="number" step="any" name="Sensor-3" id="Sensor-3" required placeholder="e.g. 0.10" />
+                </div>
+                <div class="input-group">
+                    <label for="Sensor-4">Sensor-4:</label>
+                    <input type="number" step="any" name="Sensor-4" id="Sensor-4" required placeholder="e.g. 0.20" />
+                </div>
+                <div class="input-group">
+                    <label for="Sensor-5">Sensor-5:</label>
+                    <input type="number" step="any" name="Sensor-5" id="Sensor-5" required placeholder="e.g. 0.18" />
+                </div>
+                <input type="submit" value="Predict from Manual Input" />
+            </form>
+        </section>
+
+        {% if predictions %}
+        <section class="results-section">
+            <div class="prediction-results">
+                <h2>Prediction Results</h2>
+                <ul>
+                    {% for p in predictions %}
+                    <li>{{ p }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+        {% endif %}
+
+        {% if error %}
+        <section class="error-section">
+            <div class="error-message">
+                <h3>Error: {{ error }}</h3>
+            </div>
+        </section>
+        {% endif %}
+    </div>
 </body>
 </html>
